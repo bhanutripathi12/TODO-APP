@@ -9,11 +9,7 @@ const bcrypt = require('bcryptjs');
 // @access-mode   Public
 router.post('/create', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-
-    if (!username || !email || !password) {
-      return res.status(400).send({ error: 'All fields are required' });
-    }
+    const { name, email, password } = req.body;
 
     let user = await User.findOne({ email });
     if (user) {
@@ -21,17 +17,17 @@ router.post('/create', async (req, res) => {
     }
 
     user = new User({
-      username,
-      email,
-      password // Password will be hashed in User model's pre-save hook
+      username: name,
+      email: email,
+      password: password // Ensure that password is hashed in User model's pre-save hook
     });
 
     await user.save();
     const token = await user.generateAuthToken();
     res.status(201).send({ status: 'User Created', user, token });
   } catch (error) {
-    console.error('Error in /user/create:', error);
-    res.status(500).send({ error: 'Internal Server Error' });
+    res.status(400).send({ error: error.message });
+    console.error(error.message);
   }
 });
 
@@ -42,8 +38,8 @@ router.get('/getuser', auth, async (req, res) => {
   try {
     res.status(200).send({ status: 'User fetched', user: req.user });
   } catch (error) {
-    console.error('Error in /user/getuser:', error);
-    res.status(500).send({ error: 'Internal Server Error' });
+    res.status(500).send({ error: error.message });
+    console.error(error.message);
   }
 });
 
@@ -53,21 +49,15 @@ router.get('/getuser', auth, async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).send({ error: 'Email and password are required' });
-    }
-
     const user = await User.findByCredentials(email, password);
     if (!user) {
       return res.status(400).send({ error: 'Invalid login credentials' });
     }
-
     const token = await user.generateAuthToken();
     res.status(200).send({ status: 'Login success', token, user });
   } catch (error) {
-    console.error('Error in /user/login:', error);
-    res.status(500).send({ error: 'Internal Server Error' });
+    res.status(400).send({ error: error.message });
+    console.error(error.message);
   }
 });
 
@@ -80,8 +70,8 @@ router.post('/logout', auth, async (req, res) => {
     await req.user.save();
     res.status(200).send({ status: 'Logout successfully' });
   } catch (error) {
-    console.error('Error in /user/logout:', error);
-    res.status(500).send({ error: 'Internal Server Error' });
+    res.status(500).send({ error: error.message });
+    console.error(error.message);
   }
 });
 
