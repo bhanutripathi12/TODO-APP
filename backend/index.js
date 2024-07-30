@@ -5,8 +5,8 @@ const cors = require('cors');
 const app = express();
 require('dotenv').config();
 
-const user_routes = require('./routes/user.route'); // Updated path
-const todo_routes = require('./routes/todo.route'); // Updated path
+const user_routes = require('./routes/user.route');
+const todo_routes = require('./routes/todo.route');
 
 const PORT = process.env.PORT || 8070;
 
@@ -18,11 +18,14 @@ const URI = process.env.MONGO_URL;
 mongoose.connect(URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
-
-const connection = mongoose.connection;
-connection.once("open", () => {
+  ssl: true, // Enable SSL for MongoDB connections
+  sslValidate: false, // Set to true if you have a valid certificate
+})
+.then(() => {
   console.log('MongoDB Connection Success!!!');
+})
+.catch(err => {
+  console.error('MongoDB Connection Error:', err);
 });
 
 // Routes
