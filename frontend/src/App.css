@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+    font-family: "SF Pro Display, Arial";
+    overflow-x: hidden;
+  
+    background: #1d4350;
+    background: -webkit-linear-gradient(to right, #ffffff, #dadcdd);
+    background: linear-gradient(to right, #ffffff, #dadcdd);
+  }
+  
+  .App {
+    text-align: center;
+  }
